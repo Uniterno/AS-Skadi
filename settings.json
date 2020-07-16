@@ -1,0 +1,221 @@
+{
+	"team": {
+		"A": {
+			"1": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			},
+			"2": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			},
+			"3": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			}
+		},
+		"B": {
+			"1": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 200,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			},
+			"2": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 50,
+					"Stamina": 50,
+					"Technique": 6984
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			},
+			"3": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			}
+		},
+		"C": {
+			"1": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			},
+			"2": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			},
+			"3": {
+				"Attribute": "Smile",
+				"Type": "Vo",
+				"School": "Aqours",
+				"Year": 2,
+				"Stats": {
+					"Appeal": 100,
+					"Stamina": 50,
+					"Technique": 10
+				},
+				"Skill": 0,
+				"Ability": ["Appeal+", "All", 0.1],
+				"Ability2": 0,
+				"Accesory": {
+					"Type": 0,
+					"Value": 0,
+					"Appeal": 0,
+					"Stamina": 0,
+					"Technique": 0
+				}
+			}
+		}
+	},
+	"guest": {
+		"ab": 0,
+		"ab2": 0,
+		"ins": [0]
+	},
+	"song": {
+		"notes": 9,
+		"AC": [],
+		"Notes": []
+	},
+	"actions": {
+		"SwitchAt": {
+			"10": {
+				"Strategy": "A"
+			}
+		},
+		"SP": {
+			"UseOnlyDuringACs": false,
+			"UseAsSoonAsAvailable": false,
+			"Manual": []
+		}
+	}
+}

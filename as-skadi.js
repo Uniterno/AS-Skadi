@@ -165,7 +165,7 @@ function simulate(){
 				StaminaShow = 0;
 			}
 			if(document.getElementById("showStaminaWarnings").checked){
-				Results += 'Dropped to ' + StaminaShow * 100 + '% Stamina at note ' + (i + 1) + '\n';
+				Results += 'Dropped to ' + StaminaShow * 100 + '% Stamina at note ' + i + '\n';
 			}
 			if(StaminaShow == 0){
 				i = AmountOfNotes + 1;

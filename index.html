@@ -1,0 +1,69 @@
+<html>
+<input type="file" id="files" name="files[]"/>
+<output id="list"></output>
+<head>
+	<script src="as-skadi.js"></script>
+	<link rel="stylesheet" type="text/css" href="as-skadi.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<title>AS-Skadi: SIFAS Scoring Simulator</title>
+</head>
+<body id="body" style="background-color: rgb(30, 30, 30); color: rgb(200, 100, 100)">
+<div class="flex-container">
+	<div id="menu" style="flex-grow: 3">
+		<p id="results" style="white-space: pre-line">Please load the requested JSON file.</p>
+	<button id="again" onclick="simulate()" disabled>Simulate again</button>
+	</div>
+	<div id="settings" style="flex-grow: 1">
+		<p>Toggle to enable or disable the following options: </p>
+		<div class="settingOption">
+			<label class="switch">
+			  <input id="showStaminaWarnings" type="checkbox" checked>
+			  <span class="slider round"></span>
+			</label>
+			<label class="switchText">
+				Stamina Warnings
+			</label>
+		</div>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="showSPWarnings" type="checkbox" checked>
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		SP Warnings
+		</label>
+		</div>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="showCriticalWarnings" type="checkbox" checked>
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		Critical Warnings
+		</label>
+		</div>
+		<hr>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="darkMode" type="checkbox" checked onclick="toggleDarkMode(this)">
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		Dark Mode
+		</label>
+		</div>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="playBGM" type="checkbox" onclick="toggleBGM(this)">
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		Play BGM
+		</label>
+		</div>
+	</div>
+</div>
+
+	<p id="about">This tool has been developed by Uniterno.</p>
+</body>
+</html>

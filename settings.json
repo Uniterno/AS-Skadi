@@ -214,6 +214,8 @@
 		"notes": 200,
 		"damage": 86,
 		"maxSPGauge": 6000,
+		"attribute": "Active",
+		"Tricks": [],
 		"AC": [],
 		"Notes": []
 	},
@@ -227,6 +229,13 @@
 			"UseOnlyDuringACs": false,
 			"UseAsSoonAsAvailable": false,
 			"Manual": []
+		},
+		"timing": {
+			"Wonderful": 0,
+			"Great": 0,
+			"Nice": 0,
+			"Bad": 1,
+			"Miss": 0
 		}
 	}
 }

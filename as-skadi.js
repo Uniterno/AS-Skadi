@@ -1,5 +1,7 @@
 var json;
-var bgm = new Audio('bgm.mp3');
+let bgmrng = new Uint32Array(1);
+window.crypto.getRandomValues(bgmrng);
+var bgm = new Audio('bgm/' + bgmrng[0] % 2 + '.mp3');
 
 
 function handleFileSelect(evt) {
@@ -91,8 +93,7 @@ function critical(Card){
 		CriticalEffect = 1.5; // + extra crit effect bonuses (TODO)
 		// 1.5 is base
 	}
-	//console.log("n: " + n);
-	//console.log("chance: " + Chance);
+
 	return CriticalEffect;
 }
 
@@ -119,6 +120,78 @@ function getStaminaFactor(BaseStamina, CurrentStamina){
 	return Factor;
 }
 
+function getTiming(TimingSettings){
+	let rng = new Uint32Array(1);
+	window.crypto.getRandomValues(rng);
+	let n = rng[0] % 100 + 1;
+	let m = Math.round(TimingSettings.Wonderful * 100);
+	if(n <= m){
+		return 1.2;
+	}
+	m += Math.round(TimingSettings.Great * 100);
+	if(n <= m){
+		return 1.1;
+	}
+	m += Math.round(TimingSettings.Nice * 100);
+	if(n <= m){
+		return 1;
+	}
+	m += Math.round(TimingSettings.Bad * 100);
+	if(n <= m){
+		return 0.8;
+	}
+	return 0;
+}
+
+function getCombo(CurrentCombo){
+	if(CurrentCombo < 10){
+		return 1;
+	}
+	if(CurrentCombo < 30){
+		return 1.01;
+	}
+	if(CurrentCombo < 50){
+		return 1.02;
+	}
+	if(CurrentCombo < 70){
+		return 1.03;
+	}
+	return 1.05;
+}
+
+function getStrategyMod(Strategy){
+	let Mod = {
+		"Vo": 0,
+		"Sp": 0,
+		"Gd": 0,
+		"Sk": 0
+	}
+	for(let i = 1; i <= 3; i++){
+		if(Strategy[i].Type == "Vo"){
+			Mod.Vo += 0.05;
+			Mod.Gd -= 0.05;
+		} else if(Strategy[i].Type == "Sp"){
+			Mod.Sp += 0.05;
+			Mod.Sk -= 0.05;
+		} else if(Strategy[i].Type == "Gd"){
+			Mod.Gd += 0.05;
+			Mod.Sp -= 0.05;
+		} else if(Strategy[i].Type == "Sk"){
+			Mod.Sk += 0.05;
+			Mod.Vo -= 0.05;
+		}
+	}
+
+	return Mod;
+}
+
+function getMatchingAttribute(CardAttribute, SongAttribute){
+	if(CardAttribute == SongAttribute){
+		return 1.2;
+	}
+	return 1;
+}
+
 function simulate(){
 	let AmountOfNotes = json.song.notes;
 	let i = 0;
@@ -137,11 +210,36 @@ function simulate(){
 		"B": [0, 0, 0],
 		"C": [0, 0, 0]
 	}
+
+	let StrategyMod = {
+		"A": {
+			"Vo": 0,
+			"Sp": 0,
+			"Gd": 0,
+			"Sk": 0
+		},
+		"B": {
+			"Vo": 0,
+			"Sp": 0,
+			"Gd": 0,
+			"Sk": 0
+		},
+		"C": {
+			"Vo": 0,
+			"Sp": 0,
+			"Gd": 0,
+			"Sk": 0
+		}
+	}
+
 	// Base Appeal shown in "Show Formation" - Calculation
 	for(i = 0; i <= 9; i++){
 		let Strategy = getStrategy(i);
 		let Passives = passives(json.team, i);
 		BaseAppeal[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Appeal * (1 + Passives[0]) + json.team[Strategy][i%3 + 1].Accessory.Appeal;
+		if(i%3 == 0){
+			StrategyMod[Strategy] = getStrategyMod(json.team[Strategy]);
+		}
 	}
 
 	let BaseStamina = getStamina(json.team);
@@ -150,6 +248,12 @@ function simulate(){
 
 	let StaminaThreshold = 1;
 	let Results = '';
+	let GreenNF = 1, GreenNL = 1;
+	let YellowNF, YellowNL, RedNF, RedNL;
+
+	let Combo = 0;
+	let VoltageThisNote;
+
 
 	for(i = 1; i <= AmountOfNotes; i++){
 		PassiveBonuses = passives(json.team, CurrentCard%3 + 1);
@@ -165,7 +269,21 @@ function simulate(){
 				StaminaShow = 0;
 			}
 			if(document.getElementById("showStaminaWarnings").checked){
-				Results += 'Dropped to ' + StaminaShow * 100 + '% Stamina at note ' + i + '\n';
+				if(StaminaShow == 0.7){
+					GreenNL = i - 1;
+					Results += '(Stamina) Green: ' + GreenNF + ' - ' + GreenNL + '\n';
+					YellowNF = GreenNL + 1;
+				} else if(StaminaShow == 0.3){
+					YellowNL = i - 1;
+					Results += '(Stamina) Yellow: ' + YellowNF + ' - ' + YellowNL + '\n';
+					RedNF = YellowNL + 1;
+				}
+				else if(StaminaShow == 0){
+					RedNL = i - 1;
+					Results += '(Stamina) Red: ' + RedNF + ' - ' + RedNL + '\nStamina ran out\n';
+				}
+
+				//Results += '(Stamina) Green: Dropped to ' + StaminaShow * 100 + '% Stamina at note ' + i + '\n';
 			}
 			if(StaminaShow == 0){
 				i = AmountOfNotes + 1;
@@ -175,11 +293,31 @@ function simulate(){
 		if(CriticalEffect != 1 && document.getElementById("showCriticalWarnings").checked){
 			Results += 'Critical hit at note ' + i + '\n';
 		}
-		Voltage += (BaseAppeal[CurrentStrategy][CurrentCard%3] * CriticalEffect) * StaminaFactor; 
+		let TimingEffect = getTiming(json.actions.timing);
+		if(document.getElementById("showTimingWarnings").checked){
+			let TimingEffectString = "";
+			if(TimingEffect == 1.2){TimingEffectString = "Wonderful"}
+			else if(TimingEffect == 1.1){TimingEffectString = "Great"}
+			else if(TimingEffect == 1){TimingEffectString = "Nice"}
+			else if(TimingEffect == 0.8){TimingEffectString = "Bad"}
+			else if(TimingEffect == 0){TimingEffectString = "Miss"; Combo = 0}
+			Results += '(Timing) ' + TimingEffectString + ' at note ' + i + '\n';
+		}
+
+		let ComboEffect = getCombo(Combo);
+		let MatchingAttribute = getMatchingAttribute(json.team[CurrentStrategy][CurrentCard%3 + 1].Attribute, json.song.attribute);
+
+		VoltageThisNote = Math.floor(Math.floor(Math.floor(Math.floor(Math.floor(Math.floor(BaseAppeal[CurrentStrategy][CurrentCard%3] * CriticalEffect) * TimingEffect) * ComboEffect) * (1 + StrategyMod[CurrentStrategy].Vo)) * MatchingAttribute) * StaminaFactor);
+		if(VoltageThisNote > 50000){
+			VoltageThisNote = 50000;
+		}
+		Voltage += VoltageThisNote;
 		CurrentStamina -= json.song.damage;
 		CurrentCard++;
 
 		// TODO: Calculate SP gain
+		// TODO: Special Time (Bonus after SP)
+		// TODO: ACs
 	}
 
 	Results += 'Final voltage: ' + Voltage;

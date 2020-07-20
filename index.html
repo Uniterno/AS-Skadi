@@ -2,12 +2,18 @@
 <input type="file" id="files" name="files[]"/>
 <output id="list"></output>
 <head>
-	<script src="as-skadi.js"></script>
 	<link rel="stylesheet" type="text/css" href="as-skadi.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
 	<title>AS-Skadi: SIFAS Scoring Simulator</title>
 </head>
 <body id="body" style="background-color: rgb(30, 30, 30); color: rgb(200, 100, 100)">
+	<div style="margin-top: 10px;" class="flex-container">
+		<label style="margin-right: 5px;" for="profile">Use a local profile: </label>
+		<select style="margin-right: 10px;" name="profile" id="profile">
+		 	<option value="none">(Test JSON file)</option>
+		</select>
+		<button id="local" onclick="loadProfile()">Load profile</button>
+	</div>
 <div class="flex-container">
 	<div id="menu" style="flex-grow: 3">
 		<p id="results" style="white-space: pre-line">Please load the requested JSON file.</p>
@@ -17,38 +23,38 @@
 		<p>Toggle to enable or disable the following options: </p>
 		<div class="settingOption">
 			<label class="switch">
-			  <input id="showStaminaWarnings" type="checkbox" checked>
+			  <input id="showStaminaNotifications" type="checkbox" checked>
 			  <span class="slider round"></span>
 			</label>
 			<label class="switchText">
-				Stamina Warnings
+				Stamina Notifications
 			</label>
 		</div>
 		<div class="settingOption">
 		<label class="switch">
-		  <input id="showSPWarnings" type="checkbox" checked>
+		  <input id="showSPNotifications" type="checkbox" checked>
 		  <span class="slider round"></span>
 		</label>
 		<label class="switchText">
-		SP Warnings
+		SP Notifications
 		</label>
 		</div>
 		<div class="settingOption">
 		<label class="switch">
-		  <input id="showCriticalWarnings" type="checkbox" checked>
+		  <input id="showCriticalNotifications" type="checkbox" checked>
 		  <span class="slider round"></span>
 		</label>
 		<label class="switchText">
-		Critical Warnings
+		Critical Notifications
 		</label>
 		</div>
 		<div class="settingOption">
 		<label class="switch">
-		  <input id="showTimingWarnings" type="checkbox">
+		  <input id="showTimingNotifications" type="checkbox">
 		  <span class="slider round"></span>
 		</label>
 		<label class="switchText">
-		Timing Warnings
+		Timing Notifications
 		</label>
 		</div>
 		<hr>
@@ -70,9 +76,17 @@
 		Play BGM
 		</label>
 		</div>
+		<hr>
+		<div class="settingOption">
+		<a href="saveProfile" class="button">Save profiles</a>
+		</div>
+		<div class="settingOption">
+		<a href="export" class="button">Export profiles</a>
+		</div>
 	</div>
 </div>
 
 	<p id="about">This tool has been developed by Uniterno.</p>
 </body>
+<script src="src/as-skadi.js"></script>
 </html>

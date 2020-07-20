@@ -1,0 +1,53 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="as-skadi.css">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+	<title>AS-Skadi: SIFAS Scoring Simulator</title>
+</head>
+<body id="body" style="background-color: rgb(30, 30, 30); color: rgb(200, 100, 100)">
+<div class="flex-container">
+	<div id="menu" style="flex-grow: 3">
+		<div style="margin-top: 10px; margin-bottom: 10px;" class="flex-container">
+			<label style="margin-right: 5px;" for="profile">Select a profile to export: </label>
+			<select style="margin-right: 10px;" name="profile" id="profile">
+			 	<option value="none">(Test JSON file)</option>
+			</select>
+			<button id="local" onclick="exportProfile()">Export profile</button>
+		</div>
+		<textarea readonly id="jsondata" cols=75 rows=15></textarea>
+		<br>
+	</div>
+	<div id="settings" style="flex-grow: 1">
+		<p>Toggle to enable or disable the following options: </p>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="darkMode" type="checkbox" checked onclick="toggleDarkMode(this)">
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		Dark Mode
+		</label>
+		</div>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="playBGM" type="checkbox" onclick="toggleBGM(this)">
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		Play BGM
+		</label>
+		</div>
+		<hr>
+		<div class="settingOption">
+		<a href="./" class="button">Go back to simulator</a>
+		</div>
+		<div class="settingOption">
+		<a href="saveProfile" class="button">Save profiles</a>
+		</div>
+	</div>
+</div>
+
+	<p id="about">This tool has been developed by Uniterno.</p>
+</body>
+<script src="src/export.js"></script>
+</html>

@@ -4,6 +4,17 @@ window.crypto.getRandomValues(bgmrng);
 var bgm = new Audio('bgm/' + bgmrng[0] % 2 + '.mp3');
 loadAllProfiles();
 var p;
+var simStatus = {
+	"AmountOfNotes": 0,
+	"i": 0,
+	"Voltage": 0,
+	"SPGauge": 0,
+	"CurrentCard": 0,
+	"CurrentCardStrategy": "B",
+	"CurrentSPGauge": 0,
+	"MaxSPGauge": 0,
+	"BaseAppeal": {}
+};
 
 function handleFileSelect(evt) {
 	var files = evt.target.files; // FileList object
@@ -34,7 +45,7 @@ function handleFileSelect(evt) {
 			return function (e) {
 				try {
 					json = JSON.parse(e.target.result);
-					simulate();
+					simulate(-1);
 				} catch (ex) {
 					console.log(ex);
 					alert('This file could not be read. Make sure you are following the appropiate AS-Skadi format.');
@@ -280,107 +291,157 @@ function getMatchingAttribute(CardAttribute, SongAttribute){
  	return C;
  }
 
-function simulate(){
-	document.getElementById('again').disabled = false;
-	let AmountOfNotes = json.song.notes;
-	let i = 0;
-	let Voltage = 0, SPGauge = 0, CurrentCard = 0;
-	let AppealForThisCard = 0;
-	let PassiveBonuses = [0, 0, 0]; // Appeal, Stamina and Technique
-	let CurrentCardObject;
-	let CurrentStrategy = "B";
-	let CurrentSPGauge = 0;
-	let MaxSPGauge = json.song.maxSPGauge;
-	// CurrentCard is CurrentCard%3 + 1
+function simulate(type){
+	// type -1: Read file, only pre-generate values
+	// type 0: Next note only
+	// type 1: Next x notes
+	// type 2: Next relevant event
+	// type 3: Skip to the end
+	if(type == -1){
+		document.getElementById('nextNote').disabled = false;
+		document.getElementById('skipXNotes').disabled = false;
+		document.getElementById('nextEvent').disabled = false;
+		document.getElementById('toEnd').disabled = false;	
+		document.getElementById('again').disabled = false;
+		simStatus.AmountOfNotes = json.song.notes;
+		simStatus.i = 0;
+		simStatus.Voltage = 0;
+		simStatus.SPGauge = 0;
+		simStatus.CurrentCard = 0;
+		simStatus.PassiveBonuses = [0, 0, 0]; // Appeal, Stamina and Technique
+		simStatus.CurrentStrategy = "B";
+		simStatus.CurrentSPGauge = 0;
+		simStatus.MaxSPGauge = json.song.maxSPGauge;
 
-	// Base Appeal shown in "Show Formation" - Initialization
-	let BaseAppeal = {
-		"A": [0, 0, 0],
-		"B": [0, 0, 0],
-		"C": [0, 0, 0]
-	}
+		// CurrentCard is CurrentCard%3 + 1
 
-	let StrategyMod = {
-		"A": {
-			"Vo": 0,
-			"Sp": 0,
-			"Gd": 0,
-			"Sk": 0
-		},
-		"B": {
-			"Vo": 0,
-			"Sp": 0,
-			"Gd": 0,
-			"Sk": 0
-		},
-		"C": {
-			"Vo": 0,
-			"Sp": 0,
-			"Gd": 0,
-			"Sk": 0
+		// Base Appeal shown in "Show Formation" - Initialization
+		simStatus.BaseAppeal = {
+			"A": [0, 0, 0],
+			"B": [0, 0, 0],
+			"C": [0, 0, 0]
 		}
-	}
 
-	// Base Appeal shown in "Show Formation" - Calculation
-	for(i = 0; i < 9; i++){
-		let Strategy = getStrategy(i);
-		let Passives = passives(json.team, i, json.guest);
-		BaseAppeal[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Appeal * (1 + Passives[0]) + json.team[Strategy][i%3 + 1].Accessory.Appeal;
-		if(i%3 == 0){
-			StrategyMod[Strategy] = getStrategyMod(json.team[Strategy]);
+		simStatus.StrategyMod = {
+			"A": {
+				"Vo": 0,
+				"Sp": 0,
+				"Gd": 0,
+				"Sk": 0
+			},
+			"B": {
+				"Vo": 0,
+				"Sp": 0,
+				"Gd": 0,
+				"Sk": 0
+			},
+			"C": {
+				"Vo": 0,
+				"Sp": 0,
+				"Gd": 0,
+				"Sk": 0
+			}
 		}
+		// Base Appeal shown in "Show Formation" - Calculation
+		for(i = 0; i < 9; i++){
+			let Strategy = getStrategy(i);
+			simStatus.Passives = passives(json.team, simStatus.i, json.guest);
+			simStatus.BaseAppeal[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Appeal * (1 + simStatus.Passives[0]) + json.team[Strategy][i%3 + 1].Accessory.Appeal;
+			if(i%3 == 0){
+				simStatus.StrategyMod[Strategy] = getStrategyMod(json.team[Strategy]);
+			}
+		}
+
+		simStatus.BaseStamina = getStamina(json.team);
+		simStatus.CurrentStamina = simStatus.BaseStamina;
+
+		// Effective Appeal / SP - TODO
+
+		simStatus.StaminaThreshold = 1;
+		simStatus.Results = '';
+		simStatus.GreenNF = 1;
+		simStatus.GreenNL = 1;
+		simStatus.YellowNF = undefined;
+		simStatus.YellowNL = undefined;
+		simStatus.RedNF = undefined;
+		simStatus.RedNL = undefined;
+		simStatus.Combo = 0;
+
 	}
 
-	let BaseStamina = getStamina(json.team);
-	let CurrentStamina = BaseStamina;
-	// Effective Appeal / SP - TODO
+	let iterationController;
+	let iterationCondition = function(iterationController, type, calculatedNotesAtOnce){
+          if(type == 0 || type == 1 || type == 3){
+          	return !(calculatedNotesAtOnce >= iterationController); // iterationController - i should be the amount of turns left to calculate
+          } else if(type == 2){
+          	return !iterationController; // iterationController will be a boolean, whether or not a relevant event has been encountered
+          }
+    }
+	if(type == 0){
+		iterationController = 1;
+	} else if(type == 1){
+		let v = prompt("Amount of notes to skip: ");
+		if(v <= 0 || !!v == false || isNaN(v)){
+			alert("This amount is not valid!");
+			return;
+		}
+		if(v > 200){
+			alert("The maximum of notes at once is 200, so only 200 notes will be skipped.");
+			v = 200;
+		}
+		iterationController = v; // v is the amount of turns to read (TODO)
+	} else if(type == 2){
+		iterationController = false; // yet to encounter a relevant event, turns to true when done
+	} else if(type == 3){
+		iterationController = simStatus.AmountOfNotes - simStatus.i;
+	}
 
-	let StaminaThreshold = 1;
-	let Results = '';
-	let GreenNF = 1, GreenNL = 1;
-	let YellowNF, YellowNL, RedNF, RedNL;
-
-	let Combo = 0;
-	let VoltageThisNote;
-
-
-	for(i = 1; i <= AmountOfNotes; i++){
-		PassiveBonuses = passives(json.team, CurrentCard%3 + 1, json.guest);
-		let StaminaFactor = getStaminaFactor(BaseStamina, CurrentStamina);
-		if(StaminaFactor != StaminaThreshold){
-			StaminaThreshold = StaminaFactor;
+	let calculatedNotesAtOnce = 0;
+	while(iterationCondition(iterationController, type, calculatedNotesAtOnce)){
+		let VoltageThisNote;
+		simStatus.PassiveBonuses = passives(json.team, simStatus.CurrentCard%3 + 1, json.guest);
+		let StaminaFactor = getStaminaFactor(simStatus.BaseStamina, simStatus.CurrentStamina);
+		if(StaminaFactor != simStatus.StaminaThreshold){
+			if(type == 2){
+				iterationController = true;
+			}
+			simStatus.StaminaThreshold = StaminaFactor;
 			let StaminaShow = 1;
-			if(StaminaThreshold == 0.8){
+			if(simStatus.StaminaThreshold == 0.8){
 				StaminaShow = 0.7;
-			} else if(StaminaThreshold == 0.6){
+			} else if(simStatus.StaminaThreshold == 0.6){
 				StaminaShow = 0.3;
 			} else{
 				StaminaShow = 0;
 			}
 			if(document.getElementById("showStaminaNotifications").checked){
 				if(StaminaShow == 0.7){
-					GreenNL = i - 1;
-					Results += '(Stamina) Green: ' + GreenNF + ' - ' + GreenNL + '\n';
-					YellowNF = GreenNL + 1;
+					simStatus.GreenNL = simStatus.i - 1;
+					simStatus.Results += '(Stamina) Green: ' + simStatus.GreenNF + ' - ' + simStatus.GreenNL + '\n';
+					simStatus.YellowNF = simStatus.GreenNL + 1;
 				} else if(StaminaShow == 0.3){
-					YellowNL = i - 1;
-					Results += '(Stamina) Yellow: ' + YellowNF + ' - ' + YellowNL + '\n';
-					RedNF = YellowNL + 1;
+					simStatus.YellowNL = simStatus.i - 1;
+					simStatus.Results += '(Stamina) Yellow: ' + simStatus.YellowNF + ' - ' + simStatus.YellowNL + '\n';
+					simStatus.RedNF = simStatus.YellowNL + 1;
 				}
 				else if(StaminaShow == 0){
-					RedNL = i - 1;
-					Results += '(Stamina) Red: ' + RedNF + ' - ' + RedNL + '\nStamina ran out\n';
+					simStatus.RedNL = simStatus.i - 1;
+					simStatus.Results += '(Stamina) Red: ' + simStatus.RedNF + ' - ' + simStatus.RedNL + '\nStamina ran out\n';
 				}
-
-				//Results += '(Stamina) Green: Dropped to ' + StaminaShow * 100 + '% Stamina at note ' + i + '\n';
+			
 			}
 			if(StaminaShow == 0){
-				i = AmountOfNotes + 1;
+				simStatus.i = simStatus.AmountOfNotes + 1;
+				document.getElementById("nextNote").disabled = true;
+				document.getElementById("skipXNotes").disabled = true;
+				document.getElementById("nextEvent").disabled = true;
+				document.getElementById('toEnd').disabled = true;
+				break;
 			}	
 		}
-		let CriticalEffect = critical(json.team[CurrentStrategy][CurrentCard%3 + 1]);
+		let CriticalEffect = critical(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1]);
 		if(CriticalEffect != 1 && document.getElementById("showCriticalNotifications").checked){
-			Results += 'Critical hit at note ' + i + '\n';
+			simStatus.Results += simStatus.i + ' - Critical hit!\n';
 		}
 		let TimingEffect = getTiming(json.actions.timing);
 		if(document.getElementById("showTimingNotifications").checked){
@@ -390,34 +451,45 @@ function simulate(){
 			else if(TimingEffect == 1){TimingEffectString = "Nice"}
 			else if(TimingEffect == 0.8){TimingEffectString = "Bad"}
 			else if(TimingEffect == 0){TimingEffectString = "Miss"; Combo = 0}
-			Results += '(Timing) ' + TimingEffectString + ' at note ' + i + '\n';
+			simStatus.Results += simStatus.i + ' - (Timing) ' + TimingEffectString + '\n';
 		}
 
-		let ComboEffect = getCombo(Combo);
-		let MatchingAttribute = getMatchingAttribute(json.team[CurrentStrategy][CurrentCard%3 + 1].Attribute, json.song.attribute);
+		let ComboEffect = getCombo(simStatus.Combo);
+		let MatchingAttribute = getMatchingAttribute(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1].Attribute, json.song.attribute);
 
-		VoltageThisNote = Math.floor(Math.floor(Math.floor(Math.floor(Math.floor(Math.floor(BaseAppeal[CurrentStrategy][CurrentCard%3] * CriticalEffect) * TimingEffect) * ComboEffect) * (1 + StrategyMod[CurrentStrategy].Vo)) * MatchingAttribute) * StaminaFactor);
+		VoltageThisNote = Math.floor(Math.floor(Math.floor(Math.floor(Math.floor(Math.floor(simStatus.BaseAppeal[simStatus.CurrentStrategy][simStatus.CurrentCard%3] * CriticalEffect) * TimingEffect) * ComboEffect) * (1 + simStatus.StrategyMod[simStatus.CurrentStrategy].Vo)) * MatchingAttribute) * StaminaFactor);
 		if(VoltageThisNote > 50000){
 			VoltageThisNote = 50000;
 		}
-		Voltage += VoltageThisNote;
-		CurrentStamina -= json.song.damage;
-		CurrentSPGauge += getSPFromRarity(json.team[CurrentStrategy][CurrentCard%3 + 1].Rarity);
-		if(CurrentSPGauge > MaxSPGauge){
-			CurrentSPGauge = MaxSPGauge;
+		simStatus.Voltage += VoltageThisNote;
+		simStatus.CurrentStamina -= json.song.damage;
+		simStatus.CurrentSPGauge += getSPFromRarity(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1].Rarity);
+		if(simStatus.CurrentSPGauge > simStatus.MaxSPGauge){
+			simStatus.CurrentSPGauge = simStatus.MaxSPGauge;
 			if(document.getElementById("showSPNotifications").checked){
-				Results += '(SP) SP Gauge fully charged at note ' + i + '\n';	
+				simStatus.Results += simStatus.i + ' - (SP) SP Gauge fully charged\n';	
+			}
+			if(type == 2){
+				iterationController = true;
 			}
 		}
 
-		CurrentCard++;
-
+		simStatus.CurrentCard++;
+		simStatus.i++;
+		calculatedNotesAtOnce++;
+	}
 		// TODO: Special Time (Bonus after SP)
 		// TODO: ACs
-	}
 
-	Results += 'Final voltage: ' + Voltage;
-	document.getElementById('results').innerHTML = Results;
+	simStatus.Results += 'Current voltage: ' + simStatus.Voltage + '\n';
+	document.getElementById('results').innerHTML = simStatus.Results;
+
+	if(simStatus.i >= simStatus.AmountOfNotes){
+		document.getElementById("nextNote").disabled = true;
+		document.getElementById("skipXNotes").disabled = true;
+		document.getElementById("nextEvent").disabled = true;
+		document.getElementById('toEnd').disabled = true;	
+	}
 }
 
 function toggleDarkMode(item){
@@ -463,7 +535,7 @@ function loadProfile(){
 	let selectedProfile = document.getElementById("profile").options[document.getElementById("profile").selectedIndex].text;
 	if(selectedProfile != "(Test JSON file)"){
 		json = JSON.parse(localStorage.getItem(selectedProfile));
-		simulate();
+		simulate(-1);
 	} else{
 		loadDefaultJSON(setDefaultJSON)
 	}
@@ -484,5 +556,20 @@ function loadProfile(){
 
  function setDefaultJSON(dJson){
  	json = JSON.parse(dJson);
- 	simulate();
+ 	simulate(-1);
+ }
+
+ function restartSimulation(){
+ 	simStatus = {
+	"AmountOfNotes": 0,
+	"i": 0,
+	"Voltage": 0,
+	"SPGauge": 0,
+	"CurrentCard": 0,
+	"CurrentCardStrategy": "B",
+	"CurrentSPGauge": 0,
+	"MaxSPGauge": 0,
+	"BaseAppeal": {}
+	};
+	simulate(-1);
  }

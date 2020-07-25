@@ -48,22 +48,51 @@ function handleFileSelect(evt) {
 
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
-function passives(Team, CurrentCard){
+function passives(Team, CurrentCard, Guest){
 	let Passive = [0, 0, 0];
+	let CurrentCardStrategy = getStrategy(CurrentCard);
+	let y = CurrentCard % 3 + 1;
 	for(let i = 0; i <= 9; i++){
 		let Strategy = getStrategy(i);
-		/* console.log(Team);
-		console.log(Strategy);
-		console.log(i); */
 		let x = i%3 + 1;
+		let AffectedStat = 0; // 0 Appeal, 1 Technique, 2 Stamina
 		if(Team[Strategy][x].Ability[0] == "Appeal+"){
-			if(Team[Strategy][x].Ability[1] == "All"){
-				Passive[0] += Team[Strategy][x].Ability[2];
+			AffectedStat = 0;
+		} else if(Team[Strategy][x].Ability[0] == "Technique+"){
+			AffectedStat = 1;
+		} else if(Team[Strategy][x].Ability[0] == "Stamina+"){
+			AffectedStat = 2;
+		} 
+		
+		if(Team[Strategy][x].Ability[1] == "All"){
+			Passive[AffectedStat] += Team[Strategy][x].Ability[2];
+		} if(Team[Strategy][x].Ability[1] == "Strategy"){
+			if(Strategy == CurrentCardStrategy){
+				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
+			}
+		} else if(Team[Strategy][x].Ability[1] == "Type"){
+			if(Team[CurrentCardStrategy][y].Type == Team[Strategy][x].Type){
+				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
+			}
+		} else if(Team[Strategy][x].Ability[1] == "Attribute"){
+			if(Team[CurrentCardStrategy][y].Attribute == Team[Strategy][x].Attribute){
+				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
+			}
+		} else if(Team[Strategy][x].Ability[1] == "Year"){
+			if(Team[CurrentCardStrategy][y].Year == Team[Strategy][x].Year){
+				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
+			}
+		} else if(Team[Strategy][x].Ability[1] == "Character"){
+			if(Team[CurrentCardStrategy][y].CharacterName == Team[Strategy][x].CharacterName){
+				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
+			}
+		} else if(Team[Strategy][x].Ability[1] == "Group"){
+			if(i != CurrentCard){
+				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
 			}
 		}
 	}
-	//console.log(Passive);
-	return Passive;
+	return sumArrays(Passive, addInsightPassives(Team, CurrentCard, Guest));
 }
 
 function getStrategy(i){
@@ -192,6 +221,65 @@ function getMatchingAttribute(CardAttribute, SongAttribute){
 	return 1;
 }
 
+ function getSPFromRarity(rarity){
+ 	if(rarity == "UR"){
+ 		return 200;
+ 	} else if(rarity == "SR"){
+ 		return 150;
+ 	} else if(rarity == "R"){
+ 		return 100;
+ 	}
+ }
+
+ function addInsightPassives(Team, CurrentCard, Guest){
+ 	let PassiveAdd = [0, 0, 0];
+ 	for(let i = 0; i < Guest.insight.length; i++){
+ 		let InsightType = Guest.insight[i][0];
+ 		let Condition = Guest.insight[i][1];
+ 		let Value = Guest.insight[i][2];
+
+ 		if(InsightType == "Appeal+"){
+ 			if(Condition == "All"){
+ 				PassiveAdd[0] += Value;
+ 			} else if(Condition == "Group"){
+ 				if(CurrentCard != Team.SP[1]){
+ 					PassiveAdd[0] += Value;
+ 				} // If it's not Center
+ 			} else if(Condition == "Strategy"){
+ 				if(getStrategy(CurrentCard) == getStrategy(Team.SP[1])){
+ 					PassiveAdd[0] += Value;
+ 				}
+ 			} else if(Condition == "Attribute"){
+				if(Team[getStrategy(CurrentCard)][CurrentCard%3 + 1].Attribute == Team[getStrategy(Team.SP[1])][Team.SP[1] % 3 + 1].Attribute){
+					PassiveAdd[0] += Value;
+				}
+			} else if(Condition == "Year"){
+				if(Team[getStrategy(CurrentCard)][CurrentCard%3 + 1].Year == Team[getStrategy(Team.SP[1])][Team.SP[1] % 3 + 1].Year){
+					PassiveAdd[0] += Value;
+				}
+			} 
+ 		}
+ 	}
+ 	return PassiveAdd;
+ }
+
+ function sumArrays(A, B){
+ 	let h = A.length;
+ 	let C = [];
+ 	if(B.length > h){
+ 		h = B.length;
+ 	}
+ 	for(let i = 0; i < h; i++){
+ 		if(!!A[i] == false){
+ 			A[i] = 0;
+ 		} if(!!B[i] == false){
+ 			B[i] = 0;
+ 		}
+ 		C[i] = A[i] + B[i];
+ 	}
+ 	return C;
+ }
+
 function simulate(){
 	document.getElementById('again').disabled = false;
 	let AmountOfNotes = json.song.notes;
@@ -234,9 +322,9 @@ function simulate(){
 	}
 
 	// Base Appeal shown in "Show Formation" - Calculation
-	for(i = 0; i <= 9; i++){
+	for(i = 0; i < 9; i++){
 		let Strategy = getStrategy(i);
-		let Passives = passives(json.team, i);
+		let Passives = passives(json.team, i, json.guest);
 		BaseAppeal[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Appeal * (1 + Passives[0]) + json.team[Strategy][i%3 + 1].Accessory.Appeal;
 		if(i%3 == 0){
 			StrategyMod[Strategy] = getStrategyMod(json.team[Strategy]);
@@ -257,7 +345,7 @@ function simulate(){
 
 
 	for(i = 1; i <= AmountOfNotes; i++){
-		PassiveBonuses = passives(json.team, CurrentCard%3 + 1);
+		PassiveBonuses = passives(json.team, CurrentCard%3 + 1, json.guest);
 		let StaminaFactor = getStaminaFactor(BaseStamina, CurrentStamina);
 		if(StaminaFactor != StaminaThreshold){
 			StaminaThreshold = StaminaFactor;
@@ -314,9 +402,16 @@ function simulate(){
 		}
 		Voltage += VoltageThisNote;
 		CurrentStamina -= json.song.damage;
+		CurrentSPGauge += getSPFromRarity(json.team[CurrentStrategy][CurrentCard%3 + 1].Rarity);
+		if(CurrentSPGauge > MaxSPGauge){
+			CurrentSPGauge = MaxSPGauge;
+			if(document.getElementById("showSPNotifications").checked){
+				Results += '(SP) SP Gauge fully charged at note ' + i + '\n';	
+			}
+		}
+
 		CurrentCard++;
 
-		// TODO: Calculate SP gain
 		// TODO: Special Time (Bonus after SP)
 		// TODO: ACs
 	}
@@ -353,7 +448,6 @@ function loadAllProfiles(){
 }
 
 function hash(s){
-	console.log(s);
 	let hash = 0;
 	let char = 0;  
 	if(s.length == 0) return hash; 

@@ -203,12 +203,13 @@
 					"Technique": 0
 				}
 			}
-		}
+		},
+		"SP": [1, 4, 7]
 	},
 	"guest": {
 		"ab": 0,
 		"ab2": 0,
-		"ins": [0]
+		"insight": [["Appeal+", "Strategy", 0.01], ["Appeal+", "Group", 0.01], ["Appeal+", "Strategy", 0.02]]
 	},
 	"song": {
 		"notes": 200,

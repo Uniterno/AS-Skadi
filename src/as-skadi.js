@@ -274,22 +274,52 @@ function getMatchingAttribute(CardAttribute, SongAttribute){
  	return PassiveAdd;
  }
 
- function sumArrays(A, B){
- 	let h = A.length;
- 	let C = [];
- 	if(B.length > h){
- 		h = B.length;
+function useSP(){
+ 	if(simStatus.CurrentSPGauge >= simStatus.MaxSPGauge){
+ 		simStatus.CurrentSPGauge = 0;
+ 		let f = simStatus.BaseAppeal[getStrategy(json.team.SP[0])][json.team.SP[0] % 3]; // Appeal
+ 		f += json.team[getStrategy(json.team.SP[0])][json.team.SP[0] % 3 + 1].Stats.Technique * 1.2; // Technique * 1.2
+ 		let s = simStatus.BaseAppeal[getStrategy(json.team.SP[1])][json.team.SP[1] % 3]; // Appeal
+ 		s += json.team[getStrategy(json.team.SP[1])][json.team.SP[1] % 3 + 1].Stats.Technique * 1.2; // Technique * 1.2
+		let t = simStatus.BaseAppeal[getStrategy(json.team.SP[2])][json.team.SP[2] % 3]; // Appeal
+ 		t += json.team[getStrategy(json.team.SP[2])][json.team.SP[2] % 3 + 1].Stats.Technique * 1.2; // Technique * 1.2
+ 		simStatus.Voltage += Math.floor(f + s + t);
+ 		simStatus.Results += simStatus.i + " - SP used! Obtained " + Math.floor(f + s + t) + " voltage!\n";
+ 		simStatus.Results += 'Current voltage: ' + simStatus.Voltage + '\n';
+ 		document.getElementById('results').innerHTML = simStatus.Results;
+ 		document.getElementById('useSP').hidden = true;
+ 		checkActionMargin();
  	}
- 	for(let i = 0; i < h; i++){
- 		if(!!A[i] == false){
- 			A[i] = 0;
- 		} if(!!B[i] == false){
- 			B[i] = 0;
- 		}
- 		C[i] = A[i] + B[i];
- 	}
- 	return C;
  }
+
+ function switchStrategy(strategy){
+ 	simStatus.CurrentStrategy = strategy;
+ 	simStatus.SwitchCooldown = 5;
+ 	let rng = new Uint32Array(1);
+	window.crypto.getRandomValues(rng);
+	let effectCard = rng[0] % 3 + 1;
+	let effect = json.team[strategy][effectCard].Type;
+	if(effect == "Vo"){
+		let voltageGain = Math.floor(json.team[strategy][effectCard].Stats.Appeal * 0.05);
+		simStatus.Voltage += voltageGain;
+		simStatus.Results += simStatus.i + " - (Switch) Gained " + voltageGain + " voltage\n";
+		simStatus.Results += 'Current voltage: ' + simStatus.Voltage + '\n';
+	} else if(effect = "Sp"){
+		simStatus.CurrentSPGauge += 300;
+		simStatus.Results += simStatus.i + " - (Switch) Gained 300 SP Gauge\n";
+	} else if(effect = "Gd"){
+		simStatus.CurrentStamina += simStatus.BaseStamina * 0.15;
+		simStatus.Results += simStatus.i + " - (Switch) Restored 15% Stamina (" + simStatus.BaseStamina * 0.15 + ")\n";
+	} else if(effect = "Sk"){
+		simStatus.SwitchCooldown = 3;
+		simStatus.Results += simStatus.i + " - (Switch) Note required for Strategy Switch Down by 2\n";
+	}
+	document.getElementById('results').innerHTML = simStatus.Results;
+	document.getElementById('switchA').disabled = true;
+	document.getElementById('switchB').disabled = true;
+	document.getElementById('switchC').disabled = true;
+ }
+
 
 function simulate(type){
 	// type -1: Read file, only pre-generate values
@@ -312,6 +342,7 @@ function simulate(type){
 		simStatus.CurrentStrategy = "B";
 		simStatus.CurrentSPGauge = 0;
 		simStatus.MaxSPGauge = json.song.maxSPGauge;
+		simStatus.SwitchCooldown = 0;
 
 		// CurrentCard is CurrentCard%3 + 1
 
@@ -354,8 +385,7 @@ function simulate(type){
 
 		simStatus.BaseStamina = getStamina(json.team);
 		simStatus.CurrentStamina = simStatus.BaseStamina;
-
-		// Effective Appeal / SP - TODO
+		simStatus.EffectiveAppeal = simStatus.BaseAppeal; // TODO: add skills
 
 		simStatus.StaminaThreshold = 1;
 		simStatus.Results = '';
@@ -466,17 +496,37 @@ function simulate(type){
 		simStatus.CurrentSPGauge += getSPFromRarity(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1].Rarity);
 		if(simStatus.CurrentSPGauge > simStatus.MaxSPGauge){
 			simStatus.CurrentSPGauge = simStatus.MaxSPGauge;
-			if(document.getElementById("showSPNotifications").checked){
-				simStatus.Results += simStatus.i + ' - (SP) SP Gauge fully charged\n';	
+			if(document.getElementById("showSPNotifications").checked && document.getElementById("useSP").hidden){
+				simStatus.Results += simStatus.i + ' - SP Gauge fully charged\n';
 			}
 			if(type == 2){
 				iterationController = true;
 			}
+			document.getElementById("useSP").hidden = false;
+			checkActionMargin();
 		}
 
 		simStatus.CurrentCard++;
 		simStatus.i++;
 		calculatedNotesAtOnce++;
+		simStatus.SwitchCooldown--;
+		if(simStatus.SwitchCooldown < 0){
+			simStatus.SwitchCooldown = 0;
+		}
+		if(simStatus.SwitchCooldown == 0){
+			if(simStatus.CurrentStrategy != "A"){
+				document.getElementById('switchA').disabled = false;
+			}
+			if(simStatus.CurrentStrategy != "B"){
+				document.getElementById('switchB').disabled = false;
+			}
+			if(simStatus.CurrentStrategy != "C"){
+				document.getElementById('switchC').disabled = false;
+			}
+			if(type == 2 && document.getElementById("considerSwitchRelevantEvent").checked){
+				iterationController = true;
+			}
+		}
 	}
 		// TODO: Special Time (Bonus after SP)
 		// TODO: ACs
@@ -554,12 +604,12 @@ function loadProfile(){
     xobj.send(null);  
  }
 
- function setDefaultJSON(dJson){
+function setDefaultJSON(dJson){
  	json = JSON.parse(dJson);
  	simulate(-1);
  }
 
- function restartSimulation(){
+function restartSimulation(){
  	simStatus = {
 	"AmountOfNotes": 0,
 	"i": 0,
@@ -573,3 +623,28 @@ function loadProfile(){
 	};
 	simulate(-1);
  }
+
+function sumArrays(A, B){
+ 	let h = A.length;
+ 	let C = [];
+ 	if(B.length > h){
+ 		h = B.length;
+ 	}
+ 	for(let i = 0; i < h; i++){
+ 		if(!!A[i] == false){
+ 			A[i] = 0;
+ 		} if(!!B[i] == false){
+ 			B[i] = 0;
+ 		}
+ 		C[i] = A[i] + B[i];
+ 	}
+ 	return C;
+ }
+
+function checkActionMargin(){
+	if(document.getElementById("useSP").hidden){
+		document.getElementById("actionMargin").hidden = true;
+	} else{
+		document.getElementById("actionMargin").hidden = false;
+	}
+}

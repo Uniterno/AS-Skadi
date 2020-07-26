@@ -17,9 +17,14 @@
 <div class="flex-container">
 	<div id="menu" style="flex-grow: 3">
 		<p id="results" style="white-space: pre-line">Please load the requested JSON file.</p>
-	<button id="nextNote" onclick="simulate(0)" disabled>Next note</button>
+	<button id="useSP" onclick="useSP()" hidden>Use SP</button><p id="actionMargin" hidden></p>
+	<button id="nextNote" style="margin-bottom: 5px" onclick="simulate(0)" disabled>Next note</button>
 	<button id="skipXNotes" onclick="simulate(1)" disabled>Skip x notes</button>
 	<button id="nextEvent" onclick="simulate(2)" disabled>Skip until next relevant event</button>
+	<p></p>
+	<button id="switchA" style="margin-bottom: 5px" onclick="switchStrategy('A')">Switch to A</button>
+	<button id="switchB" onclick="switchStrategy('B')" disabled>Switch to B</button>
+	<button id="switchC" onclick="switchStrategy('C')">Switch to C</button>
 	<p></p>
 	<button id="toEnd" onclick="simulate(3)" disabled>Simulate to the end</button>
 	<button id="again" onclick="restartSimulation()" disabled>Restart simulation</button>
@@ -60,6 +65,15 @@
 		</label>
 		<label class="switchText">
 		Timing Notifications
+		</label>
+		</div>
+		<div class="settingOption">
+		<label class="switch">
+		  <input id="considerSwitchRelevantEvent" type="checkbox">
+		  <span class="slider round"></span>
+		</label>
+		<label class="switchText">
+		Consider Switch availability a relevant event
 		</label>
 		</div>
 		<hr>

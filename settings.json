@@ -2,6 +2,8 @@
 	"team": {
 		"A": {
 			"1": {
+				"Character": "Honoka",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -24,6 +26,8 @@
 				}
 			},
 			"2": {
+				"Character": "Kanata",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -46,6 +50,8 @@
 				}
 			},
 			"3": {
+				"Character": "Setsuna",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -70,6 +76,8 @@
 		},
 		"B": {
 			"1": {
+				"Character": "Chika",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -92,6 +100,8 @@
 				}
 			},
 			"2": {
+				"Character": "Karin",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -114,6 +124,8 @@
 				}
 			},
 			"3": {
+				"Character": "Mari",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -138,6 +150,8 @@
 		},
 		"C": {
 			"1": {
+				"Character": "Yohane",
+				"Set": "Skadi",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -160,6 +174,8 @@
 				}
 			},
 			"2": {
+				"Character": "Yohane",
+				"Set": "Fallen Angel",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",
@@ -182,6 +198,8 @@
 				}
 			},
 			"3": {
+				"Character": "Chika",
+				"Set": "Fallen Angel",
 				"Attribute": "Smile",
 				"Type": "Vo",
 				"School": "Aqours",

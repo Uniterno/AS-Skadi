@@ -5,16 +5,15 @@
 	<title>AS-Skadi: SIFAS Scoring Simulator</title>
 </head>
 <body id="body" style="background-color: rgb(30, 30, 30); color: rgb(200, 100, 100)">
+<div style="margin-top: 10px; margin-bottom: 10px;" class="flex-container">
+	<label style="margin-right: 5px;" for="profile">Select a profile: </label>
+	<select style="margin-right: 10px;" name="profile" id="profile">
+		<option value="none">(Test JSON file)</option>
+	</select>
+	<button id="local" onclick="showStats()">Show stats</button>
+</div>
 <div class="flex-container">
 	<div id="menu" style="flex-grow: 3">
-		<div style="margin-top: 10px; margin-bottom: 10px;" class="flex-container">
-			<label style="margin-right: 5px;" for="profile">Select a profile to export: </label>
-			<select style="margin-right: 10px;" name="profile" id="profile">
-			 	<option value="none">(Test JSON file)</option>
-			</select>
-			<button id="local" onclick="exportProfile()">Export profile</button>
-		</div>
-		<textarea readonly id="jsondata" cols=75 rows=15></textarea>
 		<br>
 	</div>
 	<div id="settings" style="flex-grow: 1">
@@ -45,12 +44,12 @@
 		<a href="import" class="button">Import profiles</a>
 		</div>
 		<div class="settingOption">
-		<a href="stats" class="button">Stats overview</a>
+		<a href="export" class="button">Export profiles</a>
 		</div>
 	</div>
 </div>
 
 	<p id="about">This tool has been developed by Uniterno.</p>
 </body>
-<script src="src/export.js"></script>
+<script src="src/stats.js"></script>
 </html>

@@ -22,9 +22,9 @@
 	<button id="skipXNotes" onclick="simulate(1)" disabled>Skip x notes</button>
 	<button id="nextEvent" onclick="simulate(2)" disabled>Skip until next relevant event</button>
 	<p></p>
-	<button id="switchA" style="margin-bottom: 5px" onclick="switchStrategy('A')">Switch to A</button>
+	<button id="switchA" onclick="switchStrategy('A')" disabled>Switch to A</button>
 	<button id="switchB" onclick="switchStrategy('B')" disabled>Switch to B</button>
-	<button id="switchC" onclick="switchStrategy('C')">Switch to C</button>
+	<button id="switchC" onclick="switchStrategy('C')" disabled>Switch to C</button>
 	<p></p>
 	<button id="toEnd" onclick="simulate(3)" disabled>Simulate to the end</button>
 	<button id="again" onclick="restartSimulation()" disabled>Restart simulation</button>
@@ -97,10 +97,13 @@
 		</div>
 		<hr>
 		<div class="settingOption">
-		<a href="saveProfile" class="button">Save profiles</a>
+		<a href="import" class="button">Import profiles</a>
 		</div>
 		<div class="settingOption">
 		<a href="export" class="button">Export profiles</a>
+		</div>
+		<div class="settingOption">
+		<a href="stats" class="button">Stats overview</a>
 		</div>
 	</div>
 </div>

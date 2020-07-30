@@ -10,7 +10,6 @@ var simStatus = {
 	"Voltage": 0,
 	"SPGauge": 0,
 	"CurrentCard": 0,
-	"CurrentCardStrategy": "B",
 	"CurrentSPGauge": 0,
 	"MaxSPGauge": 0,
 	"BaseAppeal": {}
@@ -94,7 +93,7 @@ function passives(Team, CurrentCard, Guest){
 				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
 			}
 		} else if(Team[Strategy][x].Ability[1] == "Character"){
-			if(Team[CurrentCardStrategy][y].CharacterName == Team[Strategy][x].CharacterName){
+			if(Team[CurrentCardStrategy][y].Character == Team[Strategy][x].Character){
 				Passive[AffectedStat] += Team[Strategy][x].Ability[2];
 			}
 		} else if(Team[Strategy][x].Ability[1] == "Group"){
@@ -343,6 +342,10 @@ function simulate(type){
 		simStatus.CurrentSPGauge = 0;
 		simStatus.MaxSPGauge = json.song.maxSPGauge;
 		simStatus.SwitchCooldown = 0;
+		document.getElementById('switchA').disabled = false;
+		document.getElementById('switchB').disabled = true;
+		document.getElementById('switchC').disabled = false;
+		document.getElementById('useSP').hidden = true;
 
 		// CurrentCard is CurrentCard%3 + 1
 
@@ -429,6 +432,7 @@ function simulate(type){
 	let calculatedNotesAtOnce = 0;
 	while(iterationCondition(iterationController, type, calculatedNotesAtOnce)){
 		let VoltageThisNote;
+		simStatus.i++;
 		simStatus.PassiveBonuses = passives(json.team, simStatus.CurrentCard%3 + 1, json.guest);
 		let StaminaFactor = getStaminaFactor(simStatus.BaseStamina, simStatus.CurrentStamina);
 		if(StaminaFactor != simStatus.StaminaThreshold){
@@ -446,16 +450,16 @@ function simulate(type){
 			}
 			if(document.getElementById("showStaminaNotifications").checked){
 				if(StaminaShow == 0.7){
-					simStatus.GreenNL = simStatus.i - 1;
+					simStatus.GreenNL = simStatus.i;
 					simStatus.Results += '(Stamina) Green: ' + simStatus.GreenNF + ' - ' + simStatus.GreenNL + '\n';
 					simStatus.YellowNF = simStatus.GreenNL + 1;
 				} else if(StaminaShow == 0.3){
-					simStatus.YellowNL = simStatus.i - 1;
+					simStatus.YellowNL = simStatus.i;
 					simStatus.Results += '(Stamina) Yellow: ' + simStatus.YellowNF + ' - ' + simStatus.YellowNL + '\n';
 					simStatus.RedNF = simStatus.YellowNL + 1;
 				}
 				else if(StaminaShow == 0){
-					simStatus.RedNL = simStatus.i - 1;
+					simStatus.RedNL = simStatus.i;
 					simStatus.Results += '(Stamina) Red: ' + simStatus.RedNF + ' - ' + simStatus.RedNL + '\nStamina ran out\n';
 				}
 			
@@ -471,7 +475,7 @@ function simulate(type){
 		}
 		let CriticalEffect = critical(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1]);
 		if(CriticalEffect != 1 && document.getElementById("showCriticalNotifications").checked){
-			simStatus.Results += simStatus.i + ' - Critical hit!\n';
+			simStatus.Results += simStatus.i + ' - Critical!\n';
 		}
 		let TimingEffect = getTiming(json.actions.timing);
 		if(document.getElementById("showTimingNotifications").checked){
@@ -498,16 +502,15 @@ function simulate(type){
 			simStatus.CurrentSPGauge = simStatus.MaxSPGauge;
 			if(document.getElementById("showSPNotifications").checked && document.getElementById("useSP").hidden){
 				simStatus.Results += simStatus.i + ' - SP Gauge fully charged\n';
-			}
-			if(type == 2){
-				iterationController = true;
+				if(type == 2){
+					iterationController = true;
+				}
 			}
 			document.getElementById("useSP").hidden = false;
 			checkActionMargin();
 		}
 
 		simStatus.CurrentCard++;
-		simStatus.i++;
 		calculatedNotesAtOnce++;
 		simStatus.SwitchCooldown--;
 		if(simStatus.SwitchCooldown < 0){
@@ -531,7 +534,7 @@ function simulate(type){
 		// TODO: Special Time (Bonus after SP)
 		// TODO: ACs
 
-	simStatus.Results += 'Current voltage: ' + simStatus.Voltage + '\n';
+	simStatus.Results += simStatus.i + ' - Current voltage: ' + simStatus.Voltage + '\n';
 	document.getElementById('results').innerHTML = simStatus.Results;
 
 	if(simStatus.i >= simStatus.AmountOfNotes){
@@ -616,7 +619,6 @@ function restartSimulation(){
 	"Voltage": 0,
 	"SPGauge": 0,
 	"CurrentCard": 0,
-	"CurrentCardStrategy": "B",
 	"CurrentSPGauge": 0,
 	"MaxSPGauge": 0,
 	"BaseAppeal": {}

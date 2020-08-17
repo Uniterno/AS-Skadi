@@ -1,6 +1,4 @@
 <html>
-<input type="file" id="files" name="files[]"/>
-<output id="list"></output>
 <head>
 	<link rel="stylesheet" type="text/css" href="as-skadi.css">
 	<link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -16,7 +14,7 @@
 	</div>
 <div class="flex-container">
 	<div id="menu" style="flex-grow: 3">
-		<p id="results" style="white-space: pre-line">Please load the requested JSON file.</p>
+		<p id="results" style="white-space: pre-line">Please load a profile to start simulation.</p>
 	<button id="useSP" onclick="useSP()" hidden>Use SP</button><p id="actionMargin" hidden></p>
 	<button id="nextNote" style="margin-bottom: 5px" onclick="simulate(0)" disabled>Next note</button>
 	<button id="skipXNotes" onclick="simulate(1)" disabled>Skip x notes</button>
@@ -29,7 +27,7 @@
 	<button id="toEnd" onclick="simulate(3)" disabled>Simulate to the end</button>
 	<button id="again" onclick="restartSimulation()" disabled>Restart simulation</button>
 	</div>
-	<div id="settings" style="flex-grow: 1">
+	<div id="settings" style="flex-grow: 1; align-self: self-start;">
 		<p>Toggle to enable or disable the following options: </p>
 		<div class="settingOption">
 			<label class="switch">
@@ -108,7 +106,10 @@
 	</div>
 </div>
 
-	<p id="about">This tool has been developed by Uniterno.</p>
+	<p id="about" class="about"><a href="changelog/v11">AS-Skadi 0.11 Alpha</a>
+	This tool has been developed by Uniterno.
+	Please note that many features are still missing!
+	For any suggestions or inquiries feel free to contact me in Discord: Uniterno#7278</p>
 </body>
 <script src="src/as-skadi.js"></script>
 </html>

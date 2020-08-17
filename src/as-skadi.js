@@ -22,7 +22,7 @@ function handleFileSelect(evt) {
 
 }
 
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
+//document.getElementById('files').addEventListener('change', handleFileSelect, false);
 //document.getElementById('darkMode').addEventListener('change', toggleDarkMode, false);
 
 function handleFileSelect(evt) {
@@ -56,7 +56,7 @@ function handleFileSelect(evt) {
 
 }
 
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
+// document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
 function passives(Team, CurrentCard, Guest){
 	let Passive = [0, 0, 0];
@@ -115,10 +115,10 @@ function getStrategy(i){
 	return Strategy;
 }
 
-function critical(Card){
-	let Appeal = Card.Stats.Appeal;
-	let Stamina = Card.Stats.Stamina;
-	let Technique = Card.Stats.Technique;
+function critical(Strategy, Card){
+	let Appeal = simStatus.BaseAppeal[Strategy][Card];
+	let Stamina = simStatus.BaseStaminaCards[Strategy][Card];
+	let Technique = simStatus.BaseTechnique[Strategy][Card];
 	let CriticalEffect = 1; // Base value, not critical
 	let Chance = Math.round(Technique * 0.003);
 	if(Technique > Appeal && Technique > Stamina){
@@ -136,10 +136,10 @@ function critical(Card){
 	return CriticalEffect;
 }
 
-function getStamina(Team){
+function getStamina(Team, BaseStaminaCards){
 	let Stamina = 0;
 	for(i = 0; i <= 9; i++){
-		Stamina += Team[getStrategy(i)][i%3 + 1].Stats.Stamina + Team[getStrategy(i)][i%3 + 1].Accessory.Stamina;
+		Stamina += BaseStaminaCards[getStrategy(i)][i%3];
 	}
 	return Stamina;
 }
@@ -277,13 +277,15 @@ function useSP(){
  	if(simStatus.CurrentSPGauge >= simStatus.MaxSPGauge){
  		simStatus.CurrentSPGauge = 0;
  		let f = simStatus.BaseAppeal[getStrategy(json.team.SP[0])][json.team.SP[0] % 3]; // Appeal
- 		f += json.team[getStrategy(json.team.SP[0])][json.team.SP[0] % 3 + 1].Stats.Technique * 1.2; // Technique * 1.2
+ 		f += simStatus.BaseTechnique[getStrategy(json.team.SP[0])][json.team.SP[0] % 3] * 1.2; // Technique * 1.2
  		let s = simStatus.BaseAppeal[getStrategy(json.team.SP[1])][json.team.SP[1] % 3]; // Appeal
- 		s += json.team[getStrategy(json.team.SP[1])][json.team.SP[1] % 3 + 1].Stats.Technique * 1.2; // Technique * 1.2
+ 		s += simStatus.BaseTechnique[getStrategy(json.team.SP[1])][json.team.SP[1] % 3] * 1.2 // Technique * 1.2
 		let t = simStatus.BaseAppeal[getStrategy(json.team.SP[2])][json.team.SP[2] % 3]; // Appeal
- 		t += json.team[getStrategy(json.team.SP[2])][json.team.SP[2] % 3 + 1].Stats.Technique * 1.2; // Technique * 1.2
+ 		t += simStatus.BaseTechnique[getStrategy(json.team.SP[2])][json.team.SP[2] % 3] * 1.2 // Technique * 1.2
  		simStatus.Voltage += Math.floor(f + s + t);
- 		simStatus.Results += simStatus.i + " - SP used! Obtained " + Math.floor(f + s + t) + " voltage!\n";
+ 		let mathData = "Appeal1 + Appeal2 + Appeal3 + (Technique1 + Technique2 + Technique3) * 1.2\n\n" + Math.round(simStatus.BaseAppeal[getStrategy(json.team.SP[0])][json.team.SP[0] % 3]) + " + " + Math.round(simStatus.BaseAppeal[getStrategy(json.team.SP[1])][json.team.SP[1] % 3]) + " + " + Math.round(simStatus.BaseAppeal[getStrategy(json.team.SP[2])][json.team.SP[2] % 3]) + " + (" + Math.round(simStatus.BaseTechnique[getStrategy(json.team.SP[0])][json.team.SP[0] % 3]) + " + " + Math.round(simStatus.BaseTechnique[getStrategy(json.team.SP[1])][json.team.SP[1] % 3]) + " + " + Math.round(simStatus.BaseTechnique[getStrategy(json.team.SP[2])][json.team.SP[2] % 3]) + ") * 1.2";
+		simStatus.Results += "<div class='tooltip'><a>" + simStatus.i + " - SP used! Obtained " + Math.floor(f + s + t) + " voltage!</a><a class='tooltiptext'>" + mathData + "</a></div>\n";
+ 		//simStatus.Results += simStatus.i + " - SP used! Obtained " + Math.floor(f + s + t) + " voltage!\n";
  		simStatus.Results += 'Current voltage: ' + simStatus.Voltage + '\n';
  		document.getElementById('results').innerHTML = simStatus.Results;
  		document.getElementById('useSP').hidden = true;
@@ -291,7 +293,7 @@ function useSP(){
  	}
  }
 
- function switchStrategy(strategy){
+function switchStrategy(strategy){
  	simStatus.CurrentStrategy = strategy;
  	simStatus.SwitchCooldown = 5;
  	let rng = new Uint32Array(1);
@@ -317,7 +319,11 @@ function useSP(){
 	document.getElementById('switchA').disabled = true;
 	document.getElementById('switchB').disabled = true;
 	document.getElementById('switchC').disabled = true;
- }
+}
+
+function getAccessoryStats(Stat, Strategy, Team){
+	return Team[Strategy][1].Accessory[Stat] + Team[Strategy][2].Accessory[Stat] + Team[Strategy][3].Accessory[Stat];
+}
 
 
 function simulate(type){
@@ -356,6 +362,18 @@ function simulate(type){
 			"C": [0, 0, 0]
 		}
 
+		simStatus.BaseTechnique = {
+			"A": [0, 0, 0],
+			"B": [0, 0, 0],
+			"C": [0, 0, 0]
+		}
+
+		simStatus.BaseStaminaCards = {
+			"A": [0, 0, 0],
+			"B": [0, 0, 0],
+			"C": [0, 0, 0]
+		}
+
 		simStatus.StrategyMod = {
 			"A": {
 				"Vo": 0,
@@ -380,13 +398,15 @@ function simulate(type){
 		for(i = 0; i < 9; i++){
 			let Strategy = getStrategy(i);
 			simStatus.Passives = passives(json.team, simStatus.i, json.guest);
-			simStatus.BaseAppeal[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Appeal * (1 + simStatus.Passives[0]) + json.team[Strategy][i%3 + 1].Accessory.Appeal;
+			simStatus.BaseAppeal[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Appeal * (1 + simStatus.Passives[0]) + getAccessoryStats("Appeal", Strategy, json.team);
+			simStatus.BaseTechnique[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Technique * (1 + simStatus.Passives[1]) * getMatchingAttribute(json.team[Strategy][i%3 + 1].Attribute, json.song.attribute) + getAccessoryStats("Technique", Strategy, json.team);
+			simStatus.BaseStaminaCards[Strategy][i%3] = json.team[Strategy][i%3 + 1].Stats.Stamina * (1 + simStatus.Passives[2]) * getMatchingAttribute(json.team[Strategy][i%3 + 1].Attribute, json.song.attribute) + getAccessoryStats("Stamina", Strategy, json.team);
 			if(i%3 == 0){
 				simStatus.StrategyMod[Strategy] = getStrategyMod(json.team[Strategy]);
 			}
 		}
 
-		simStatus.BaseStamina = getStamina(json.team);
+		simStatus.BaseStamina = getStamina(json.team, simStatus.BaseStaminaCards);
 		simStatus.CurrentStamina = simStatus.BaseStamina;
 		simStatus.EffectiveAppeal = simStatus.BaseAppeal; // TODO: add skills
 
@@ -434,6 +454,14 @@ function simulate(type){
 		let VoltageThisNote;
 		simStatus.i++;
 		simStatus.PassiveBonuses = passives(json.team, simStatus.CurrentCard%3 + 1, json.guest);
+		let currentStrategyClass = "strategy-none";
+		if(simStatus.CurrentStrategy == "B"){
+			currentStrategyClass = "strategy-green";
+		} else if(simStatus.CurrentStrategy == "A"){
+			currentStrategyClass = "strategy-red";
+		} else if(simStatus.CurrentStrategy == "C"){
+			currentStrategyClass = "strategy-blue";
+		}
 		let StaminaFactor = getStaminaFactor(simStatus.BaseStamina, simStatus.CurrentStamina);
 		if(StaminaFactor != simStatus.StaminaThreshold){
 			if(type == 2){
@@ -473,10 +501,8 @@ function simulate(type){
 				break;
 			}	
 		}
-		let CriticalEffect = critical(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1]);
-		if(CriticalEffect != 1 && document.getElementById("showCriticalNotifications").checked){
-			simStatus.Results += simStatus.i + ' - Critical!\n';
-		}
+		let CriticalEffect = critical(simStatus.CurrentStrategy, simStatus.CurrentCard, simStatus.BaseTechnique);
+		
 		let TimingEffect = getTiming(json.actions.timing);
 		if(document.getElementById("showTimingNotifications").checked){
 			let TimingEffectString = "";
@@ -496,6 +522,13 @@ function simulate(type){
 			VoltageThisNote = 50000;
 		}
 		simStatus.Voltage += VoltageThisNote;
+		if(CriticalEffect != 1 && document.getElementById("showCriticalNotifications").checked){
+			simStatus.Results += "<div class='tooltip'><a class='" + currentStrategyClass + "'>" + simStatus.i + ' - Critical!';
+		} else{
+			simStatus.Results += "<div class='tooltip'><a class='" + currentStrategyClass + "'>" + simStatus.i + ' - ';
+		}
+		let mathData = "Base Appeal * Critical * Timing * Combo * (1 + StrategyMod) * MatchingAttribute * Stamina\n\n" + Math.floor(simStatus.BaseAppeal[simStatus.CurrentStrategy][simStatus.CurrentCard%3]) + " * " + CriticalEffect + " * " + TimingEffect + " * " + Math.floor(ComboEffect) + " * (1 + " + parseFloat((simStatus.StrategyMod[simStatus.CurrentStrategy].Vo).toFixed(2)) + ") * " + MatchingAttribute + " * " + StaminaFactor;
+		simStatus.Results += " [" + json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1].Character + " - " + json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1].Set + "] Voltage gain: " + VoltageThisNote + "</a><a class='tooltiptext'>" + mathData + "</a></div>\n";
 		simStatus.CurrentStamina -= json.song.damage;
 		simStatus.CurrentSPGauge += getSPFromRarity(json.team[simStatus.CurrentStrategy][simStatus.CurrentCard%3 + 1].Rarity);
 		if(simStatus.CurrentSPGauge > simStatus.MaxSPGauge){
@@ -641,7 +674,7 @@ function sumArrays(A, B){
  		C[i] = A[i] + B[i];
  	}
  	return C;
- }
+}
 
 function checkActionMargin(){
 	if(document.getElementById("useSP").hidden){

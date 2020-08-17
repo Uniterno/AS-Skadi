@@ -1,9 +1,10 @@
 /* The switch - the box around the slider */
 .switch {
-  position: relative;
   display: inline-flex;
-  width: 60px;
   height: 34px;
+  position: relative;
+  width: 60px;
+
 }
 
 .switchText {
@@ -12,22 +13,22 @@
 
 /* Hide default HTML checkbox */
 .switch input {
+  height: 0;
   opacity: 0;
   width: 0;
-  height: 0;
 }
 
 /* The slider */
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
   transition: .4s;
+  -webkit-transition: .4s;
 }
 
 .slider:before {
@@ -106,3 +107,97 @@ a.button:hover{
     margin:0.2em auto;
   }
 }
+
+.card-flex-container-card {
+  flex-direction: column;
+}
+
+.card-flex-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.card-flex-container-strategy {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+
+.card-flex-container-card {
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-flex-container-card-image {
+  /* text-align: center; */
+}
+
+.card-flex-container-card-text {
+  width: 165px;
+  height: 110px;
+}
+
+.card-text {
+  white-space: pre-line;
+  overflow: hidden;
+}
+
+.strategy-green {
+ color: rgb(26, 195, 78);
+}
+
+.strategy-red {
+  color: rgb(255, 65, 97);
+}
+
+.strategy-blue {
+  color: rgb(2, 141, 243);
+}
+
+.strategy-sp {
+  background-color: rgb(50, 50, 50)
+}
+
+.card-icon-img {
+  height: 40px;
+  width: 40px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 720px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.about {
+  white-space: pre-line;
+}
+
+.changelog {
+  white-space: pre-line;
+}
+

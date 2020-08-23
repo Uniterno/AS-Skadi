@@ -14,7 +14,94 @@
 					"Stamina": 50,
 					"Technique": 10
 				},
-				"Skill": 0,
+				"active_skill": {
+					"skill_id": "-bpujib",
+					"trigger_type": 255,
+					"trigger_probability": 3300,
+					"skill_level": 5,
+					"target": {
+			          "id": 58,
+			          "self_only": 0,
+			          "not_self": 0,
+			          "apply_count": 9,
+			          "owner_party": 0,
+			          "owner_school": 0,
+			          "owner_year": 0,
+			          "owner_subunit": 0,
+			          "owner_attribute": 0,
+			          "owner_role": 0,
+			          "fixed_attributes": [
+			            
+			          ],
+			          "fixed_members": [
+			            
+			          ],
+			          "fixed_subunits": [
+			            
+			          ],
+			          "fixed_schools": [
+			            
+			          ],
+			          "fixed_years": [
+			            
+			          ],
+			          "fixed_roles": [
+			            
+			          ]
+        			},
+        			"levels": [
+				          [
+				            2,
+				            97,
+				            2800,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            97,
+				            3100,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            97,
+				            3400,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            97,
+				            3700,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            97,
+				            4000,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ]
+				      ]
+				},
 				"Ability": ["Appeal+", "All", 0.1],
 				"Ability2": 0,
 				"Accessory": {
@@ -58,11 +145,99 @@
 				"Year": 2,
 				"Rarity": "UR",
 				"Stats": {
-					"Appeal": 100,
-					"Stamina": 50,
-					"Technique": 10
+					"Appeal": 5,
+					"Stamina": 1800,
+					"Technique": 5
 				},
-				"Skill": 0,
+				"active_skill": {
+					"skill_id": "e1d11p",
+				    "trigger_probability": 3300,
+				    "skill_level": 5,
+				    "target": {
+				     	"id": 58,
+				         "self_only": 0,
+				         "not_self": 0,
+				         "apply_count": 9,
+				         "owner_party": 0,
+				         "owner_school": 0,
+				         "owner_year": 0,
+				         "owner_subunit": 0,
+				         "owner_attribute": 0,
+				         "owner_role": 0,
+				         "fixed_attributes": [
+				           
+				          ],
+				          "fixed_members": [
+				            
+				          ],
+				          "fixed_subunits": [
+				            
+				          ],
+				          "fixed_schools": [
+				            
+				          ],
+				          "fixed_years": [
+				            
+				          ],
+				          "fixed_roles": [
+				          ]
+				    },
+				    "conditions": [
+				          
+				    ],
+				    "levels": [
+				    	[
+				        	2,
+				            94,
+				            2000,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            94,
+				            2300,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            94,
+				            2600,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            94,
+				            2900,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ],
+				          [
+				            2,
+				            94,
+				            3200,
+				            2,
+				            2,
+				            2,
+				            3,
+				            0
+				          ]
+				        ]
+				},
 				"Ability": ["Appeal+", "All", 0.1],
 				"Ability2": 0,
 				"Accessory": {
@@ -88,7 +263,96 @@
 					"Stamina": 50,
 					"Technique": 2700
 				},
-				"Skill": 0,
+				"active_skill": {
+			        "skill_id": "-p0ri30",
+			        "trigger_probability": 10000,
+			        "skill_level": 5,
+			        "target": {
+			          "id": 53,
+			          "self_only": 0,
+			          "not_self": 0,
+			          "apply_count": 3,
+			          "owner_party": 1,
+			          "owner_school": 0,
+			          "owner_year": 0,
+			          "owner_subunit": 0,
+			          "owner_attribute": 0,
+			          "owner_role": 0,
+			          "fixed_attributes": [
+			            
+			          ],
+			          "fixed_members": [
+			            
+			          ],
+			          "fixed_subunits": [
+			            
+			          ],
+			          "fixed_schools": [
+			            
+			          ],
+			          "fixed_years": [
+			            
+			          ],
+			          "fixed_roles": [
+			            
+			          ]
+			        },
+			        "conditions": [
+			          
+			        ],
+			        "levels": [
+			          [
+			            2,
+			            17,
+			            700,
+			            2,
+			            2,
+			            2,
+			            2,
+			            5
+			          ],
+			          [
+			            2,
+			            17,
+			            750,
+			            2,
+			            2,
+			            2,
+			            2,
+			            5
+			          ],
+			          [
+			            2,
+			            17,
+			            800,
+			            2,
+			            2,
+			            2,
+			            2,
+			            5
+			          ],
+			          [
+			            2,
+			            17,
+			            850,
+			            2,
+			            2,
+			            2,
+			            2,
+			            5
+			          ],
+			          [
+			            2,
+			            17,
+			            900,
+			            2,
+			            2,
+			            2,
+			            2,
+			            5
+			          ]
+			        ]
+			    },
 				"Ability": ["Appeal+", "All", 0.1],
 				"Ability2": 0,
 				"Accessory": {
@@ -210,7 +474,96 @@
 					"Stamina": 5000,
 					"Technique": 10
 				},
-				"Skill": 0,
+				"active_skill": {
+					"skill_id": "rwrtr2",
+			        "trigger_probability": 3300,
+			        "skill_level": 5,
+			        "target": {
+			          "id": 58,
+			          "self_only": 0,
+			          "not_self": 0,
+			          "apply_count": 9,
+			          "owner_party": 0,
+			          "owner_school": 0,
+			          "owner_year": 0,
+			          "owner_subunit": 0,
+			          "owner_attribute": 0,
+			          "owner_role": 0,
+			          "fixed_attributes": [
+			            
+			          ],
+			          "fixed_members": [
+			            
+			          ],
+			          "fixed_subunits": [
+			            
+			          ],
+			          "fixed_schools": [
+			            
+			          ],
+			          "fixed_years": [
+			            
+			          ],
+			          "fixed_roles": [
+			            
+			          ]
+			        },
+			        "conditions": [
+			          
+			        ],
+			        "levels": [
+			          [
+			            2,
+			            91,
+			            700,
+			            2,
+			            2,
+			            2,
+			            3,
+			            0
+			          ],
+			          [
+			            2,
+			            91,
+			            750,
+			            2,
+			            2,
+			            2,
+			            3,
+			            0
+			          ],
+			          [
+			            2,
+			            91,
+			            800,
+			            2,
+			            2,
+			            2,
+			            3,
+			            0
+			          ],
+			          [
+			            2,
+			            91,
+			            850,
+			            2,
+			            2,
+			            2,
+			            3,
+			            0
+			          ],
+			          [
+			            2,
+			            91,
+			            900,
+			            2,
+			            2,
+			            2,
+			            3,
+			            0
+			          ]
+			        ]
+			      },
 				"Ability": ["Appeal+", "All", 0.1],
 				"Ability2": 0,
 				"Accessory": {

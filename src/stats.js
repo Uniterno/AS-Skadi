@@ -31,15 +31,6 @@ function loadAllProfiles(){
  	}	
 }
 
-function exportProfile(){
-	let selectedProfile = document.getElementById("profile").options[document.getElementById("profile").selectedIndex].text;
-	if(selectedProfile != "(Test JSON file)"){
-		document.getElementById('jsondata').value = localStorage.getItem(selectedProfile);
-	} else{
-		loadDefaultJSON(setDefaultJSON);
-	}
-}
-
  function loadDefaultJSON(callback) {   
     var xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
@@ -52,8 +43,8 @@ function exportProfile(){
     xobj.send(null);  
  }
 
- function setDefaultJSON(dJson){
- 	document.getElementById('jsondata').value = dJson;
+function setDefaultJSON(dJson){
+ 	json = JSON.parse(dJson);
  }
 
  function hash(s){
@@ -213,6 +204,7 @@ function getMatchingAttribute(CardAttribute, SongAttribute){
 }
 
 function showStats(){
+
 	let selectedProfile = document.getElementById("profile").options[document.getElementById("profile").selectedIndex].text;
 	if(selectedProfile != "(Test JSON file)"){
 		json = JSON.parse(localStorage.getItem(selectedProfile));
